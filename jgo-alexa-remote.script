@@ -1,0 +1,103 @@
+% Config
+config system_output 0
+
+on init
+do
+  % Assign gpio ids
+  % First  Taster GPIO: 5
+  % First  LED GPIO: 0
+  % Second Taster GPIO: 4
+  % Second LED GPIO: 2
+  % Third  Taster GPIO: 14
+  % Third  LED GPIO: 13
+  % Forth  Taster GPIO: 12
+  % Forth  LED GPIO: 1
+
+  % LEDs
+  gpio_pinmode 0  output
+  gpio_pinmode 2  output
+  gpio_pinmode 13 output
+  gpio_pinmode 1  output
+
+  % Buttons
+  gpio_pinmode 5  input pullup
+  gpio_pinmode 4  input pullup
+  gpio_pinmode 14 input pullup
+  gpio_pinmode 12 input pullup
+
+  % Enable all lights at boot
+  gpio_out     0  1
+  gpio_out     2  1
+  gpio_out     13 1
+  gpio_out     1  1
+
+  % Cache for current button state
+  setvar $first  = 0
+  setvar $second = 0
+  setvar $third  = 0
+  setvar $forth  = 0
+
+
+on mqttconnect
+do
+  subscribe remote first
+  subscribe remote second
+  subscribe remote third
+  subscribe remote forth
+  % get initial state
+  publish remote hello 0
+
+% On button press
+on gpio_interrupt 5 nopullup
+do
+  if $this_gpio = 0 then
+    println "Button (first) Pressed: GPIO 5"
+    publish remote first not ($first)
+  endif
+
+on gpio_interrupt 4 nopullup
+do
+  if $this_gpio = 0 then
+    println "Button (second) Pressed: GPIO 4"
+    publish remote second not ($second)
+  endif
+
+on gpio_interrupt 14 nopullup
+do
+  if $this_gpio = 0 then
+    println "Button (third) Pressed: GPIO 14"
+    publish remote third not ($third)
+  endif
+
+on gpio_interrupt 12 nopullup
+do
+  if $this_gpio = 0 then
+    println "Button (forth) Pressed: GPIO 12"
+    publish remote forth not ($forth)
+  endif
+
+
+% Fetch status
+on topic remote first
+do
+  println "Received (first): " | $this_data
+  setvar $first = $this_data
+  gpio_out 0 $first
+
+on topic remote second
+do
+  println "Received (second): " | $this_data
+  setvar $second = $this_data
+  gpio_out 2 $second
+
+on topic remote third
+do
+  println "Received (third): " | $this_data
+  setvar $third = $this_data
+  gpio_out 13 $third
+
+on topic remote forth
+do
+  println "Received (forth): " | $this_data
+  setvar $forth = $this_data
+  gpio_out 1 $forth
