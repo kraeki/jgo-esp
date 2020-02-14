@@ -1,0 +1,49 @@
+% Config
+config system_output 0
+
+on init
+do
+  % Assign gpio ids
+  % First  Relais GPIO: 5
+  % Second Relais GPIO: 4
+  % Third  Relais GPIO: 14
+  % Forth  Relais GPIO: 12
+
+  % GPIO (Relais) as Output
+  gpio_pinmode 5  output
+  gpio_pinmode 4  output
+  gpio_pinmode 14 output
+  gpio_pinmode 12 output
+
+
+  % Disable all Relais on startup
+  gpio_out     5  0
+  gpio_out     4  0
+  gpio_out     14 0
+  gpio_out     12 0
+
+  subscribe local first
+  subscribe local second
+  subscribe local third
+  subscribe local forth
+
+% Control Relais
+on topic local first
+do
+  println "Received (first): " | $this_data
+  gpio_out 5 $this_data
+
+on topic local second
+do
+  println "Received (second): " | $this_data
+  gpio_out 4 $this_data
+
+on topic local third
+do
+  println "Received (third): " | $this_data
+  gpio_out 14 $this_data
+
+on topic local forth
+do
+  println "Received (forth): " | $this_data
+  gpio_out 12 $this_data
