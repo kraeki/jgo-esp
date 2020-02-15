@@ -17,10 +17,10 @@ do
 
 
   % Disable all Relais on startup
-  gpio_out     5  0
-  gpio_out     4  0
-  gpio_out     14 0
-  gpio_out     12 0
+  gpio_out     5  1
+  gpio_out     4  1
+  gpio_out     14 1
+  gpio_out     12 1
 
   subscribe local first
   subscribe local second
@@ -31,19 +31,19 @@ do
 on topic local first
 do
   println "Received (first): " | $this_data
-  gpio_out 5 $this_data
+  gpio_out 5 not($this_data)
 
 on topic local second
 do
   println "Received (second): " | $this_data
-  gpio_out 4 $this_data
+  gpio_out 4 not($this_data)
 
 on topic local third
 do
   println "Received (third): " | $this_data
-  gpio_out 14 $this_data
+  gpio_out 14 not($this_data)
 
 on topic local forth
 do
   println "Received (forth): " | $this_data
-  gpio_out 12 $this_data
+  gpio_out 12 not($this_data)
